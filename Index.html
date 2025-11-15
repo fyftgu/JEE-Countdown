@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Countdown PiP</title>
+<style>
+  body {
+    background: #000;
+    color: #fff;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding-top: 40px;
+  }
+  #pipButton {
+    margin-top: 20px;
+    padding: 12px 22px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<h2>🎉 Countdown to Jan 21</h2>
+
+<video id="pipVideo" width="300" height="150" style="background:black;" muted></video>
+
+<br>
+<button id="pipButton" onclick="enterPiP()">Open Countdown in PiP</button>
+
+<script>
+const video = document.getElementById("pipVideo");
+const canvas = document.createElement("canvas");
+const ctx = canvas.getContext("2d");
+canvas.width = 300;
+canvas.height = 150;
+
+video.srcObject = canvas.captureStream();
+
+function drawCountdown() {
+    const target = new Date("January 21, 2026 00:00:00").getTime();
+    const now = Date.now();
+    const diff = target - now;
+
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hrs = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const secs = Math.floor((diff % (1000 * 60)) / 1000);
+
+    const text = `${days}d ${hrs}h ${mins}m ${secs}s`;
+
+    ctx.fillStyle = "black";
+    ctx.fillRect(0, 0, 300, 150);
+
+    ctx.fillStyle = "white";
+    ctx.font = "30px Arial";
+    ctx.textAlign = "center";
+    ctx.fillText(text, 150, 80);
+}
+
+setInterval(drawCountdown, 1000);
+
+async function enterPiP() {
+    try {
+        await video.play();
+        await video.requestPictureInPicture();
+    } catch (e) {
+        alert("PiP not supported: " + e);
+    }
+}
+</script>
+
+</body>
+</html>
