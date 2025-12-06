@@ -2,29 +2,6 @@
 <html>
 <head>
 <title>Countdown PiP</title>
-<script>
-        function updateCountdown() {
-            // Target date (Jan 21 at midnight)
-            const target = new Date("January 21, 2026 00:00:00").getTime();
-            const now = new Date().getTime();
-            const diff = target - now;
-
-            if (diff <= 0) {
-                document.title = "Time's up!";
-                return;
-            }
-
-            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-            document.title = `${days}d ${hours}h ${minutes}m ${seconds}s`;
-        }
-
-        setInterval(updateCountdown, 1000);
-        updateCountdown();
-</script>
 <style>
   body {
     background: #000;
@@ -94,5 +71,3 @@ async function enterPiP() {
 
 </body>
 </html>
-
-
