@@ -23,44 +23,47 @@
 <h2>🎉 Countdown to Jan 21</h2>
 
 <video id="pipVideo" width="300" height="150" style="background:black;" muted></video>
-
 <br>
 <button id="pipButton" onclick="enterPiP()">Open Countdown in PiP</button>
 
 <script>
-// --- PICTURE IN PICTURE SETUP ---
-const video = document.getElementById("pipVideo");
-const canvas = document.createElement("canvas");
-const ctx = canvas.getContext("2d");
-canvas.width = 300;
-canvas.height = 150;
-
-video.srcObject = canvas.captureStream();
-
-// --- MAIN COUNTDOWN FUNCTION ---
+// ====== COUNTDOWN FUNCTION (Runs independently) ======
 function getCountdownText() {
     const target = new Date("January 21, 2026 00:00:00").getTime();
     const now = Date.now();
     const diff = target - now;
 
-    if (diff <= 0) return "0d 0h 0m 0s";
+    if (diff < 0) return "0d 0h 0m 0s";
 
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    const hrs = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    const secs = Math.floor((diff % (1000 * 60)) / 1000);
+    const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const s = Math.floor((diff % (1000 * 60)) / 1000);
 
-    return `${days}d ${hrs}h ${mins}m ${secs}s`;
+    return `${d}d ${h}h ${m}m ${s}s`;
 }
 
-// --- UPDATE PiP & TITLE ---
-function updateEverything() {
+// ====== UPDATE TITLE ONLY ======
+function updateTitle() {
+    document.title = getCountdownText();
+}
+
+// Run every second
+setInterval(updateTitle, 1000);
+updateTitle();
+
+
+// ====== PICTURE-IN-PICTURE CODE (separate + safe) ======
+const video = document.getElementById("pipVideo");
+const canvas = document.createElement("canvas");
+const ctx = canvas.getContext("2d");
+canvas.width = 300;
+canvas.height = 150;
+video.srcObject = canvas.captureStream();
+
+function updatePiP() {
     const text = getCountdownText();
 
-    // Update title
-    document.title = text;
-
-    // Update PiP canvas
     ctx.fillStyle = "black";
     ctx.fillRect(0, 0, 300, 150);
 
@@ -70,10 +73,10 @@ function updateEverything() {
     ctx.fillText(text, 150, 80);
 }
 
-setInterval(updateEverything, 1000);
-updateEverything();
+setInterval(updatePiP, 1000);
+updatePiP();
 
-// --- ENTER PICTURE IN PICTURE ---
+// Start PiP only on button click (required by browser)
 async function enterPiP() {
     try {
         await video.play();
